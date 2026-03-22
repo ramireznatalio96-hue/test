@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Karen ❤️</title>
 
-<!-- Preload de la imagen de fondo (corregido) -->
+<!-- Preload de la imagen de fondo (corrige la línea suelta "photo.jpg") -->
 photo.jpg
 
 <style>
@@ -21,6 +21,9 @@ photo.jpg
     --title-size: clamp(22px, 5.2vw, 44px);
     --bottom-size: clamp(16px, 4.2vw, 28px);
     --safe-gap: clamp(16px, 6vh, 40px);
+
+    /* Tamaño del corazón SVG debajo de la rosa */
+    --heart-size: clamp(64px, 16vw, 120px);
   }
 
   * { box-sizing: border-box; }
@@ -69,7 +72,7 @@ photo.jpg
     z-index: 50;
   }
 
-  /* Texto inferior (BOTTOM) — ahora permite clics */
+  /* Texto inferior: lo dejamos pero SIN corazón (vacío, por si quieres texto luego) */
   #bottomText {
     position: absolute;
     bottom: calc(var(--safe-gap) + env(safe-area-inset-bottom, 0px));
@@ -81,7 +84,7 @@ photo.jpg
     line-height: 1.25;
     text-shadow: 0 0 10px var(--glow);
     z-index: 50;
-    pointer-events: auto; /* ✅ habilitado para click */
+    pointer-events: none; /* sin controles aquí ya */
   }
 
   /* Wrapper centrado: rosa + control debajo */
@@ -153,95 +156,48 @@ photo.jpg
     50%      { transform: translateX(12px); }
   }
 
-  /* ====== Botón corazón: (debajo de la rosa) — SIN CAMBIOS ====== */
-  .heart-wrapper {
+  /* ====== Corazón brillante (SVG) DEBAJO DE LA ROSA ====== */
+  .shiny-heart-wrapper {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; /* espacio entre el corazón y el texto "(click me)" */
+    gap: 8px;
     color: #fff;
+    text-align: center;
     user-select: none;
     touch-action: manipulation;
-    text-align: center;
   }
-  .heart-btn {
-    position: relative;
-    width: 64px;
-    height: 58px;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    transform: rotate(-45deg);
-    border-radius: 14px 14px 0 0;
-    background:
-      radial-gradient(120% 120% at 30% 30%, #ff7a9a 0%, #ff3a63 45%, #e0003a 75%, #9b0029 100%);
-    box-shadow:
-      0 10px 18px rgba(224, 0, 58, 0.45),
-      0 3px 8px rgba(0,0,0,0.35),
-      inset 0 0 0 1px rgba(255,255,255,0.12);
-    transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
-    animation: pulse 1.6s ease-in-out infinite;
-  }
-  .heart-btn::before,
-  .heart-btn::after {
-    content: "";
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    background: inherit;
-    border-radius: 50%;
-    box-shadow: inherit;
-  }
-  .heart-btn::before { top: -32px; left: 0; }
-  .heart-btn::after  { top: 0; left: 32px; }
-  .heart-btn .sheen {
-    position: absolute; width: 90px; height: 36px; top: -10px; left: -6px; transform: rotate(45deg);
-    background: radial-gradient(100% 100% at 50% 50%,
-      rgba(255,255,255,0.55) 0%,
-      rgba(255,255,255,0.25) 40%,
-      rgba(255,255,255,0.08) 60%,
-      rgba(255,255,255,0.00) 75%);
-    filter: blur(0.4px); pointer-events: none;
-  }
-  .heart-btn .base-shadow {
-    position: absolute; bottom: -10px; left: -2px; width: 100px; height: 26px; transform: rotate(45deg);
-    background: radial-gradient(60% 60% at 50% 50%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.0) 70%);
-    filter: blur(4px); opacity: .45; pointer-events: none;
-  }
-  @keyframes pulse {
-    0%, 100% { transform: rotate(-45deg) scale(1); filter: brightness(1); }
-    50%      { transform: rotate(-45deg) scale(1.06); filter: brightness(1.07); }
-  }
-  .heart-btn:active {
-    transform: rotate(-45deg) scale(0.97);
-    box-shadow:
-      0 6px 12px rgba(224, 0, 58, 0.35),
-      0 2px 6px rgba(0,0,0,0.35),
-      inset 0 0 0 1px rgba(255,255,255,0.18);
-    animation: none;
-  }
-  .heart-caption { font-size: clamp(14px, 3.8vw, 16px); letter-spacing: 0.2px; text-shadow: 0 1px 2px rgba(0,0,0,.35); opacity: 0.95; }
-  .heart-wrapper[aria-disabled="true"] .heart-btn { cursor: default; animation: none; filter: grayscale(0.1) brightness(0.9); box-shadow: 0 3px 7px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.10); }
-  .heart-wrapper[aria-disabled="true"] .heart-caption { opacity: 0.75; }
-
-  /* === Bottom heart (similar a tu imagen, objeto único SVG & clickeable) === */
-  .bottom-heart-btn{
+  .shiny-heart-btn{
     appearance:none;
     background:none;
     border:none;
-    cursor:pointer;                 /* clickeable */
-    width: clamp(64px, 16vw, 120px);
+    cursor:pointer;
+    width: var(--heart-size);
     height: auto;
     padding: 0;
     line-height: 0;
     filter: drop-shadow(0 10px 18px rgba(224,0,58,0.45))
             drop-shadow(0 3px 8px rgba(0,0,0,0.35));
-    animation: bh-pulse 1.8s ease-in-out infinite; /* pulso suave */
+    animation: heartPulse 1.6s ease-in-out infinite; /* pulso suave */
     transition: transform .12s ease;
   }
-  .bottom-heart-btn:active { transform: scale(0.96); }
-  .bottom-heart-svg{ display:block; width:100%; height:auto; }
-  @keyframes bh-pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+  .shiny-heart-btn:active { transform: scale(0.96); }
+  .shiny-heart-svg{ display:block; width:100%; height:auto; }
+  @keyframes heartPulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+
+  .heart-caption {
+    font-size: clamp(14px, 3.8vw, 16px);
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    opacity: 0.95;
+  }
+
+  .shiny-heart-wrapper[aria-disabled="true"] .shiny-heart-btn {
+    cursor: default;
+    animation: none;
+    filter: grayscale(0.08) brightness(0.92) drop-shadow(0 3px 7px rgba(0,0,0,0.28));
+  }
+  .shiny-heart-wrapper[aria-disabled="true"] .heart-caption { opacity: 0.75; }
 
   /* Ajuste en landscape */
   @media (orientation: landscape) {
@@ -256,65 +212,60 @@ photo.jpg
 
     <h1 id="title">Karen, te quiero mucho</h1>
 
-    <!-- Rosa centrada y control de música debajo (SIN CAMBIOS) -->
+    <!-- Rosa centrada y (NUEVO) corazón brillante debajo -->
     <div id="roseWrapper">
       <div id="centerStack">
         <div id="rose">🌹</div>
 
-        <!-- Botón corazón debajo de la rosa -->
-        <div id="heartWrapper" class="heart-wrapper" role="group" aria-label="Control de música" aria-disabled="false">
-          <button id="heartBtn" class="heart-btn" aria-label="Reproducir música">
-            <span class="sheen"></span>
-            <span class="base-shadow"></span>
+        <!-- ✅ Reemplazo: corazón brillante (SVG) en lugar del corazón anterior -->
+        <div id="heartWrapper" class="shiny-heart-wrapper" role="group" aria-label="Control de música" aria-disabled="false">
+          <button id="heartBtn" class="shiny-heart-btn" aria-label="Reproducir música en loop" title="Reproducir música">
+            <svg class="shiny-heart-svg" viewBox="0 0 100 92" width="100%" height="100%" aria-hidden="true">
+              <defs>
+                <linearGradient id="bh-grad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%"  stop-color="#ff7a9a"/>
+                  <stop offset="45%" stop-color="#ff3a63"/>
+                  <stop offset="75%" stop-color="#e0003a"/>
+                  <stop offset="100%" stop-color="#9b0029"/>
+                </linearGradient>
+                <radialGradient id="bh-shine" cx="0.32" cy="0.28" r="0.55">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+                  <stop offset="45%" stop-color="rgba(255,255,255,0.25)"/>
+                  <stop offset="70%" stop-color="rgba(255,255,255,0.08)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                </radialGradient>
+                <filter id="bh-inner">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"/>
+                  <feComposite in="b" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="2" result="inner"/>
+                  <feColorMatrix in="inner" type="matrix"
+                    values="0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 0.45 0" result="shade"/>
+                  <feBlend in="SourceGraphic" in2="shade" mode="normal"/>
+                </filter>
+              </defs>
+
+              <!-- UN SOLO PATH (forma del corazón) -->
+              <path filter="url(#bh-inner)" fill="url(#bh-grad)"
+                    d="M50 86
+                       C 20 66, 6 52, 6 34
+                       C 6 20, 17 10, 30 10
+                       C 39 10, 46 14, 50 20
+                       C 54 14, 61 10, 70 10
+                       C 83 10, 94 20, 94 34
+                       C 94 52, 80 66, 50 86 Z"/>
+              <!-- Brillo -->
+              <ellipse cx="38" cy="28" rx="22" ry="12" fill="url(#bh-shine)" />
+            </svg>
           </button>
           <span id="heartCaption" class="heart-caption">(click me)</span>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM: corazón brillante similar a la imagen (clickeable) -->
-    <div id="bottomText">
-      <button id="bottomHeartBtn" class="bottom-heart-btn" aria-label="Reproducir música en loop">
-        <svg class="bottom-heart-svg" viewBox="0 0 100 92" width="100%" height="100%" aria-hidden="true">
-          <defs>
-            <linearGradient id="bh-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%"  stop-color="#ff7a9a"/>
-              <stop offset="45%" stop-color="#ff3a63"/>
-              <stop offset="75%" stop-color="#e0003a"/>
-              <stop offset="100%" stop-color="#9b0029"/>
-            </linearGradient>
-            <radialGradient id="bh-shine" cx="0.32" cy="0.28" r="0.55">
-              <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
-              <stop offset="45%" stop-color="rgba(255,255,255,0.25)"/>
-              <stop offset="70%" stop-color="rgba(255,255,255,0.08)"/>
-              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-            </radialGradient>
-            <filter id="bh-inner">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"/>
-              <feComposite in="b" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="2" result="inner"/>
-              <feColorMatrix in="inner" type="matrix"
-                values="0 0 0 0 0
-                        0 0 0 0 0
-                        0 0 0 0 0
-                        0 0 0 0.45 0" result="shade"/>
-              <feBlend in="SourceGraphic" in2="shade" mode="normal"/>
-            </filter>
-          </defs>
-
-          <!-- UN SOLO PATH del corazón -->
-          <path filter="url(#bh-inner)" fill="url(#bh-grad)"
-                d="M50 86
-                   C 20 66, 6 52, 6 34
-                   C 6 20, 17 10, 30 10
-                   C 39 10, 46 14, 50 20
-                   C 54 14, 61 10, 70 10
-                   C 83 10, 94 20, 94 34
-                   C 94 52, 80 66, 50 86 Z"/>
-          <!-- Brillo -->
-          <ellipse cx="38" cy="28" rx="22" ry="12" fill="url(#bh-shine)" />
-        </svg>
-      </button>
-    </div>
+    <!-- Dejamos el contenedor de abajo vacío -->
+    <div id="bottomText"></div>
   </div>
 
 <!-- ====== SCRIPTS ====== -->
@@ -352,47 +303,38 @@ photo.jpg
 
   // ========= Música: reproducir en LOOP al primer clic =========
   const audio = new Audio('music.mp3');  // asegúrate de tener este archivo
-  audio.loop = true;   // ✅ loop activado
+  audio.loop = true;   // loop activado
   audio.preload = 'auto';
 
   const heartWrapper = document.getElementById('heartWrapper');
   const heartBtn = document.getElementById('heartBtn');
   const heartCaption = document.getElementById('heartCaption');
-  const bottomHeartBtn = document.getElementById('bottomHeartBtn');
 
   let hasPlayed = false;
 
   const playOnce = async () => {
     if (hasPlayed) return;
     try {
+      // feedback rápido
+      heartBtn.style.animation = 'none';
+      heartBtn.style.transform = 'scale(0.97)';
+      setTimeout(() => { heartBtn.style.animation = ''; heartBtn.style.transform = ''; }, 160);
+
       await audio.play();
       hasPlayed = true;
 
-      // feedback visual para el botón superior (si fue el que se tocó)
-      if (heartBtn) {
-        heartBtn.style.animation = 'none';
-        heartBtn.style.transform = 'rotate(-45deg) scale(0.97)';
-        setTimeout(() => { heartBtn.style.animation = ''; heartBtn.style.transform = ''; }, 160);
-        heartWrapper.setAttribute('aria-disabled', 'true');
-        heartBtn.setAttribute('aria-label', 'Reproduciendo música (loop)');
-      }
-
-      // detener pulso del bottom (opcional)
-      if (bottomHeartBtn) bottomHeartBtn.style.animation = 'none';
-
+      heartWrapper.setAttribute('aria-disabled', 'true');
+      heartBtn.setAttribute('aria-label', 'Reproduciendo música (loop)');
     } catch (e) {
-      if (heartCaption) heartCaption.textContent = '(tap again)';
+      heartCaption.textContent = '(tap again)';
       console.warn('No se pudo reproducir audio:', e);
     }
   };
 
-  // Click en el botón corazón debajo de la rosa (se mantiene)
+  // Click en el corazón (debajo de la rosa)
   heartBtn.addEventListener('click', playOnce, { passive: true });
 
-  // Click en el corazón del bottom (nuevo)
-  bottomHeartBtn.addEventListener('click', playOnce, { passive: true });
-
-  // Nota: como el audio está en loop, 'ended' normalmente no disparará.
+  // Nota: audio en loop, por lo que 'ended' no dispara normalmente.
 </script>
 </body>
 </html>
