@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Karen ❤️</title>
+
+<!-- Preload de la imagen de fondo -->
+photo.jpg
+
+<style>
+  :root{
+    --bg-url: url('photo.jpg');
+    --txt-color: #ffffff;
+    --glow: #ff2a4f;
+    --glow-strong: #ff0033;
+    --shadow: rgba(0,0,0,0.35);
+
+    /* Tamaños fluidos y zonas seguras */
+    --rose-size: clamp(96px, 22vw, 220px);
+    --title-size: clamp(22px, 5.2vw, 44px);
+    --bottom-size: clamp(16px, 4.2vw, 28px);
+    --safe-gap: clamp(16px, 6vh, 40px);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    color: var(--txt-color);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* Escenario a pantalla completa con perspectiva 3D */
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;        /* Fallback universal */
+    height: 100dvh;       /* Usado si el navegador lo soporta */
+    perspective: 1000px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Fondo con overlay para legibilidad */
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
+      var(--bg-url) center/cover no-repeat fixed;
+    z-index: 1;
+    will-change: transform;
+  }
+
+  /* Texto superior */
+  #title {
+    position: absolute;
+    top: calc(var(--safe-gap) + env(safe-area-inset-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92%, 1000px);
+    text-align: center;
+    font-size: var(--title-size);
+    line-height: 1.25;
+    text-shadow: 0 0 8px var(--glow), 0 0 18px var(--glow);
+    z-index: 50;
+  }
+
+  /* Texto inferior */
+  #bottomText {
+    position: absolute;
+    bottom: calc(var(--safe-gap) + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92%, 900px);
+    text-align: center;
+    font-size: var(--bottom-size);
+    line-height: 1.25;
+    text-shadow: 0 0 10px var(--glow);
+    z-index: 50;
+    pointer-events: none; /* deja pasar el toque al control si se superponen */
+  }
+
+  /* Wrapper centrado: rosa + control debajo */
+  #roseWrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;     /* centro vertical */
+    justify-content: center; /* centro horizontal */
+    z-index: 40;             /* encima de pétalos, debajo de textos */
+    pointer-events: none;    /* el wrapper no captura eventos */
+  }
+  #centerStack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;               /* separación entre rosa y corazón */
+    pointer-events: auto;    /* aquí sí permitimos clics */
+  }
+
+  /* Rosa animada */
+  #rose {
+    font-size: var(--rose-size);
+    transform-style: preserve-3d;
+    text-shadow:
+      0 0 5px #ff4d6d,
+      0 0 15px var(--glow),
+      0 0 30px var(--glow-strong),
+      0 6px 18px var(--shadow);
+    animation: floatRotateY 6s ease-in-out infinite;
+    will-change: transform;
+  }
+  @keyframes floatRotateY {
+    0%   { transform: translateY(0) rotateY(0deg); }
+    25%  { transform: translateY(-14px) rotateY(90deg); }
+    50%  { transform: translateY(-26px) rotateY(180deg); }
+    75%  { transform: translateY(-14px) rotateY(270deg); }
+    100% { transform: translateY(0) rotateY(360deg); }
+  }
+
+  /* ========= PÉTALOS con animaciones separadas por capas ========= */
+  .petal-track {
+    position: absolute;
+    top: -12vh;
+    opacity: 0;
+    z-index: 30;
+    will-change: transform, opacity;
+    animation: fall var(--fall-dur, 6s) linear var(--fall-delay, 0s) infinite;
+  }
+  .petal-sway {
+    will-change: transform;
+    animation: sway var(--sway-dur, 3.6s) ease-in-out var(--fall-delay, 0s) infinite;
+  }
+  .petal {
+    width: 14px;
+    height: 18px;
+    background: radial-gradient(circle at 40% 40%, #ff6a85, #c0163d 65%, #800020 95%);
+    border-radius: 50% 50% 60% 60%;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
+    transform: rotate(var(--rot, 0deg));
+  }
+  @keyframes fall {
+    0%   { transform: translateY(0);     opacity: 0; }
+    10%  {                               opacity: 1; }
+    100% { transform: translateY(112vh); opacity: 0; }
+  }
+  @keyframes sway {
+    0%, 100% { transform: translateX(-12px); }
+    50%      { transform: translateX(12px); }
+  }
+
+  /* ====== Botón corazón: más realista (debajo de la rosa) ====== */
+  .heart-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* espacio entre el corazón y el texto "(click me)" */
+    color: #fff;
+    user-select: none;
+    touch-action: manipulation;
+    text-align: center;
+  }
+
+  .heart-btn {
+    position: relative;
+    width: 64px;
+    height: 58px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transform: rotate(-45deg);
+    border-radius: 14px 14px 0 0;
+    background:
+      radial-gradient(120% 120% at 30% 30%, #ff7a9a 0%, #ff3a63 45%, #e0003a 75%, #9b0029 100%);
+    box-shadow:
+      /* sombra externa para levantar */
+      0 10px 18px rgba(224, 0, 58, 0.45),
+      0 3px 8px rgba(0,0,0,0.35),
+      /* contorno suave */
+      inset 0 0 0 1px rgba(255,255,255,0.12);
+    transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  /* lóbulos del corazón */
+  .heart-btn::before,
+  .heart-btn::after {
+    content: "";
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    background: inherit;          /* misma gradiente que el cuerpo */
+    border-radius: 50%;
+    box-shadow: inherit;
+  }
+  .heart-btn::before { top: -32px; left: 0; }
+  .heart-btn::after  { top: 0; left: 32px; }
+
+  /* brillo especular (sheen) */
+  .heart-btn .sheen {
+    position: absolute;
+    width: 90px;
+    height: 36px;
+    top: -10px;
+    left: -6px;
+    transform: rotate(45deg);    /* compensa la rotación del corazón */
+    background: radial-gradient(100% 100% at 50% 50%,
+        rgba(255,255,255,0.55) 0%,
+        rgba(255,255,255,0.25) 40%,
+        rgba(255,255,255,0.08) 60%,
+        rgba(255,255,255,0.00) 75%);
+    filter: blur(0.4px);
+    pointer-events: none;
+  }
+
+  /* sombra inferior para más volumen */
+  .heart-btn .base-shadow {
+    position: absolute;
+    bottom: -10px;
+    left: -2px;
+    width: 100px;
+    height: 26px;
+    transform: rotate(45deg);
+    background: radial-gradient(60% 60% at 50% 50%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.0) 70%);
+    filter: blur(4px);
+    opacity: .45;
+    pointer-events: none;
+  }
+
+  /* pulsito */
+  @keyframes pulse {
+    0%, 100% { transform: rotate(-45deg) scale(1); filter: brightness(1); }
+    50%      { transform: rotate(-45deg) scale(1.06); filter: brightness(1.07); }
+  }
+
+  /* interacción */
+  .heart-btn:active {
+    transform: rotate(-45deg) scale(0.97);
+    box-shadow:
+      0 6px 12px rgba(224, 0, 58, 0.35),
+      0 2px 6px rgba(0,0,0,0.35),
+      inset 0 0 0 1px rgba(255,255,255,0.18);
+    animation: none;
+  }
+
+  /* Texto debajo del corazón */
+  .heart-caption {
+    font-size: clamp(14px, 3.8vw, 16px);
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    opacity: 0.95;
+  }
+
+  /* Deshabilitado tras reproducir (una sola vez) */
+  .heart-wrapper[aria-disabled="true"] .heart-btn {
+    cursor: default;
+    animation: none;
+    filter: grayscale(0.1) brightness(0.9);
+    box-shadow: 0 3px 7px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.10);
+  }
+  .heart-wrapper[aria-disabled="true"] .heart-caption {
+    opacity: 0.75;
+  }
+
+  /* Ajuste en landscape */
+  @media (orientation: landscape) {
+    :root { --rose-size: clamp(96px, 18vw, 220px); }
+  }
+</style>
+</head>
+
+<body>
+  <div class="stage" role="img" aria-label="Pétalos cayendo sobre una foto de fondo con una rosa brillante centrada.">
+    <div class="bg" aria-hidden="true"></div>
+
+    <h1 id="title">Karen, te quiero mucho</h1>
+
+    <!-- Rosa centrada y control de música debajo -->
+    <div id="roseWrapper">
+      <div id="centerStack">
+        <div id="rose">🌹</div>
+
+        <!-- Botón corazón debajo de la rosa -->
+        <div id="heartWrapper" class="heart-wrapper" role="group" aria-label="Control de música" aria-disabled="false">
+          <button id="heartBtn" class="heart-btn" aria-label="Reproducir música">
+            <span class="sheen"></span>
+            <span class="base-shadow"></span>
+          </button>
+          <span id="heartCaption" class="heart-caption">(click me)</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="bottomText">Te quiero ver cada minuto</div>
+  </div>
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+  // ========= Parámetros de pétalos =========
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const PETAL_COUNT = isMobile ? 28 : 52;
+
+  const DUR_MIN = 5.0, DUR_MAX = 8.0;
+  const SWAY_MIN = 3.0, SWAY_MAX = 5.0;
+  const ROT_START = [-25, 25];
+
+  const stage = document.querySelector('.stage');
+
+  // Generar estructura anidada: track (caída) -> sway (deriva) -> petal (visual)
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    const track = document.createElement('div');
+    track.className = 'petal-track';
+    track.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+    track.style.setProperty('--fall-delay', (Math.random() * 4).toFixed(2) + 's');
+    track.style.setProperty('--fall-dur', (DUR_MIN + Math.random() * (DUR_MAX - DUR_MIN)).toFixed(2) + 's');
+
+    const sway = document.createElement('div');
+    sway.className = 'petal-sway';
+    sway.style.setProperty('--sway-dur', (SWAY_MIN + Math.random() * (SWAY_MAX - SWAY_MIN)).toFixed(2) + 's');
+
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.setProperty('--rot', (ROT_START[0] + Math.random() * (ROT_START[1] - ROT_START[0])).toFixed(1) + 'deg');
+
+    sway.appendChild(petal);
+    track.appendChild(sway);
+    stage.appendChild(track);
+  }
+
+  // ========= Música: reproducir UNA sola vez al tocar el corazón =========
+  const audio = new Audio('music.mp3'); // cambia el nombre si tu archivo se llama distinto
+  audio.loop = false;
+  audio.preload = 'auto';
+
+  const heartWrapper = document.getElementById('heartWrapper');
+  const heartBtn = document.getElementById('heartBtn');
+  const heartCaption = document.getElementById('heartCaption');
+
+  let hasPlayed = false;
+
+  const playOnce = async () => {
+    if (hasPlayed) return;
+    try {
+      // feedback visual rápido al toque
+      heartBtn.style.animation = 'none';
+      heartBtn.style.transform = 'rotate(-45deg) scale(0.97)';
+      setTimeout(() => { heartBtn.style.animation = ''; heartBtn.style.transform = ''; }, 160);
+
+      await audio.play();
+      hasPlayed = true;
+      heartWrapper.setAttribute('aria-disabled', 'true');
+      heartBtn.setAttribute('aria-label', 'Reproduciendo música');
+      // Si prefieres, puedes cambiar el texto:
+      // heartCaption.textContent = 'Gracias ❤️';
+    } catch (e) {
+      // Si falla (restricción del navegador), sugerimos intentar de nuevo
+      heartCaption.textContent = '(tap again)';
+      console.warn('No se pudo reproducir audio:', e);
+    }
+  };
+
+  heartBtn.addEventListener('click', playOnce, { passive: true });
+
+  audio.addEventListener('ended', () => {
+    heartWrapper.setAttribute('aria-disabled', 'true');
+    // heartCaption.textContent = 'Gracias ❤️';
+  });
+</script>
+</body>
+</html>
